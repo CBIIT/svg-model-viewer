@@ -8,8 +8,10 @@ $( function () {
     zoomSnap: 1,
     bounceAtZoomLimits: true,
   });
-  let nb = setup_node_select(model)
-  var bounds = [[-2914,3379],[4,-4]]
+
+  let BB = $("#graph").find('svg').children('g').get(0).getBBox();
+  let nb = setup_node_select(model,BB.width+BB.x,BB.y)
+  var bounds = [[BB.y,BB.width+BB.x],[BB.height+BB.y,BB.x]]
   var image = L.svgOverlay($("#graph").find('svg').get(0), bounds).addTo(model)
   model.fitBounds(bounds)
   // L.polygon(nb.adverse_event.rect,{color: 'lightblue'}).addTo(model)
@@ -17,10 +19,9 @@ $( function () {
   model.flyToBounds(nb.case.bounds)
   
 })
-
-function setup_node_select(model) {
-  let nb = get_node_bounds();
-  console.log(nb);
+ 
+function setup_node_select(model, X, Y) {
+  let nb = get_node_bounds(X,Y);
   Object.keys(nb).sort()
     .forEach( function (item) {
       $("#node_select")
@@ -33,10 +34,8 @@ function setup_node_select(model) {
   return nb
 }
 
-function get_node_bounds() {
+function get_node_bounds(X,Y) {
   let ret={}
-  let X=3383
-  let Y=-2914
   $('svg').find('.node')
     .each( function () {
       let bb =this.getBBox()
